@@ -1,0 +1,98 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+```{r load&processingchunk, echo=TRUE}
+  activity <-  unzip("./activity.zip")
+  activitydata <- read.csv(activity)
+  summary(activitydata)
+```
+
+
+## What is mean total number of steps taken per day?
+```{r histogram, echo =TRUE, fig.height=6,fig.width=8}
+  stepsperday <- aggregate(steps~date,activitydata,sum)
+  hist(stepsperday$steps,breaks=20,main="Hist of total number of steps taken each day",col="wheat",xlab="steps")
+
+```
+
+###The mean of total total number of steps taken per day is
+
+```{r stepsperdaymean, echo =TRUE, cache=TRUE}
+  mean(stepsperday$steps)
+```
+
+###The median of total total number of steps taken per day is
+
+```{r stepsperdaymedian, echo =TRUE, cache=TRUE}
+  median(stepsperday$steps)
+```
+
+## What is the average daily activity pattern?
+
+```{r plot, fig.height=6,fig.width=8}
+  stepsperinterval <- aggregate(steps~interval,activitydata,mean)
+  library(ggplot2)
+  g <- ggplot(stepsperinterval,aes(interval,steps))
+  g+geom_line(size=0.5,color="blue")+labs(x="interval")+labs(y="steps")+labs(title="Average number of steps taken, averaged across all days")
+  max_value <- max(stepsperinterval$steps)
+  stepsperinterval[stepsperinterval$steps == max_value, ]
+```
+
+###The maximum number of step is 
+```{r maxvalue, results='asis'}
+  max_value <- max(stepsperinterval$steps)
+  print(max_value) 
+```
+
+###that corresponds to the interval
+```{r maxinterval}
+  max_interval <- stepsperinterval[stepsperinterval$steps == max_value, ]
+  max_interval$interval
+```
+
+## Imputing missing values
+
+###The number missing values NA of the activity dataframe are 
+```{r missingvalues}
+  for (Var in names(activitydata)) {
+    missing <- sum(is.na(activitydata[,Var]))
+    if (missing > 0) {
+        print(missing)
+    }
+  }
+```
+
+###We create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r newdfwithnoNA}
+  df_impute <- activitydata
+  index <- is.na(df_impute$steps)
+  df_ign <- subset(activitydata,!is.na(activitydata$steps))
+  int_avg <- tapply(df_ign$steps, df_ign$interval, mean, na.rm=TRUE, simplify=T)
+  df_impute$steps[index] <- int_avg[as.character(df_impute$interval[index])]
+```
+###Make a histogram of the total number of steps taken each day
+```{r histogram_impute, echo =TRUE, fig.height=6,fig.width=8}
+  stepsperday_impute <- aggregate(steps~date,df_impute,sum)
+  hist(stepsperday_impute$steps,breaks=20,main="Hist of total number of steps taken each day, with missing data replaced",col="wheat",xlab="steps")
+```
+
+###The mean and median total number of steps taken per day are
+```{r stepsperdaymean_impute, echo =TRUE, cache=TRUE}
+  mean(stepsperday_impute$steps)
+```
+
+```{r stepsperdaymedian_impute, echo =TRUE, cache=TRUE}
+  median(stepsperday_impute$steps)
+```
+
+#####The mean of the dataframe with imputed values is the same of the original data frame, while the median of the data frame with imputed value is different rom the original one, it has the same value of the mean. this is due to the fact that we replaced the NA values with the mean of values for the same day.
+
+
+
