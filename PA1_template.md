@@ -24,6 +24,10 @@
 
 ## What is mean total number of steps taken per day?
 
+#### The histogram shows the total number of steps taken each day
+
+
+
 ```r
   stepsperday <- aggregate(steps~date,activitydata,sum)
   hist(stepsperday$steps,breaks=20,main="Hist of total number of steps taken each day",col="wheat",xlab="steps")
@@ -31,7 +35,8 @@
 
 ![](PA1_template_files/figure-html/histogram-1.png) 
 
-###The mean of total total number of steps taken per day is
+
+#### The mean of total total number of steps taken per day is
 
 
 ```r
@@ -42,7 +47,7 @@
 ## [1] 10766.19
 ```
 
-###The median of total total number of steps taken per day is
+####The median of total total number of steps taken per day is
 
 
 ```r
@@ -53,7 +58,9 @@
 ## [1] 10765
 ```
 
-## What is the average daily activity pattern?
+## What is the average daily activity pattern?  
+
+####This a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
 ```r
@@ -82,7 +89,8 @@
 ## 104      835 206.1698
 ```
 
-###The maximum number of step is 
+###The maximum number of step is  
+
 
 ```r
   max_value <- max(stepsperinterval$steps)
@@ -91,7 +99,8 @@
 
 [1] 206.1698
 
-###that corresponds to the interval
+###that corresponds to the interval  
+
 
 ```r
   max_interval <- stepsperinterval[stepsperinterval$steps == max_value, ]
@@ -104,7 +113,8 @@
 
 ## Imputing missing values
 
-###The number missing values NA of the activity dataframe are 
+#### The number missing values NA of the activity dataframe are 
+
 
 ```r
   for (Var in names(activitydata)) {
@@ -119,7 +129,9 @@
 ## [1] 2304
 ```
 
-###We create a new dataset that is equal to the original dataset but with the missing data filled in.
+#### I create a new dataset that is equal to the original one but with the missing data filled in. 
+#### In the following code I replace the NA VALUE of steps variable, with the mean for that day
+
 
 ```r
   df_impute <- activitydata
@@ -128,7 +140,11 @@
   int_avg <- tapply(df_ign$steps, df_ign$interval, mean, na.rm=TRUE, simplify=T)
   df_impute$steps[index] <- int_avg[as.character(df_impute$interval[index])]
 ```
-###Make a histogram of the total number of steps taken each day
+  
+
+#### The following histogram shows the distribution of the total number of steps taken each day  
+
+
 
 ```r
   stepsperday_impute <- aggregate(steps~date,df_impute,sum)
@@ -136,8 +152,9 @@
 ```
 
 ![](PA1_template_files/figure-html/histogram_impute-1.png) 
+  
+#### The mean and median total number of steps taken per day are  
 
-###The mean and median total number of steps taken per day are
 
 ```r
   mean(stepsperday_impute$steps)
@@ -156,7 +173,7 @@
 ## [1] 10766.19
 ```
 
-#####The mean of the dataframe with imputed values is the same of the original data frame, while the median of the data frame with imputed value is different rom the original one, it has the same value of the mean. this is due to the fact that we replaced the NA values with the mean of values for the same day.
+####The mean of the dataframe with imputed values is the same of the original data frame, while the median of the data frame with imputed value is different rom the original one, it has the same value of the mean. this is due to the fact that we replaced the NA values with the mean of values for the same day.
 
 
 
